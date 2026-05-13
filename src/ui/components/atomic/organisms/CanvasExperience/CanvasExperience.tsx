@@ -80,9 +80,10 @@ export const CanvasExperience = () => {
                 >
                     <DragTracker isDragging={isDragging} />
                     <Suspense fallback={null}>
-                        <Environment preset="city" />
-                        <ambientLight intensity={0.5} />
-                        <directionalLight position={[5, 5, 5]} intensity={0.5} />
+                        <Environment preset="studio" environmentIntensity={1.2} />
+                        <ambientLight intensity={0.3} />
+                        <directionalLight position={[5, 8, 5]} intensity={1.2} castShadow />
+                        <directionalLight position={[-5, 2, -3]} intensity={0.4} />
                         <Center position={[0, 0, 0]}>
                             <Test />
                         </Center>

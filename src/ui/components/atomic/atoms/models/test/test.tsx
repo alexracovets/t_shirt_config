@@ -6,13 +6,16 @@ import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useConfiguratorStore } from "@store";
 import type { ShirtPart } from "@store";
-import { Color, CanvasTexture, SRGBColorSpace, BackSide, ShaderMaterial, MeshBasicMaterial, AlwaysStencilFunc, ReplaceStencilOp, NotEqualStencilFunc, KeepStencilOp } from "three";
-import type { Mesh, BufferGeometry, MeshStandardMaterial as TMeshStd } from "three";
+import {
+    Color, CanvasTexture, SRGBColorSpace, BackSide,
+    ShaderMaterial, MeshBasicMaterial,
+    AlwaysStencilFunc, ReplaceStencilOp, NotEqualStencilFunc, KeepStencilOp,
+    MeshStandardMaterial,
+} from "three";
+import type { Mesh, BufferGeometry, MeshStandardMaterial as TMeshStd, Texture } from "three";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { ThreeEvent } from "@react-three/fiber";
 import { useDragGuard } from "@organisms/CanvasExperience/CanvasExperience";
-
-const INSIDE_COLOR = "#ffffff";
 
 interface TShirtGLTF extends GLTF {
     nodes: {
@@ -22,6 +25,10 @@ interface TShirtGLTF extends GLTF {
         "t-shirt_sleeve_right": { geometry: BufferGeometry };
         "t-shirt_front":        { geometry: BufferGeometry };
         "t-shirt_collar":       { geometry: BufferGeometry };
+    };
+    materials: {
+        shirt:        MeshStandardMaterial;
+        shirt_inside: MeshStandardMaterial;
     };
 }
 
@@ -45,7 +52,7 @@ function usePatternImage(url: string): HTMLImageElement | null {
     return img;
 }
 
-function buildTexture(color: string, patternImg: HTMLImageElement | null): CanvasTexture {
+function buildColorTexture(color: string, patternImg: HTMLImageElement | null): CanvasTexture {
     const size   = 1024;
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = size;
@@ -62,19 +69,20 @@ function buildTexture(color: string, patternImg: HTMLImageElement | null): Canva
     return t;
 }
 
-function usePartTexture(color: string, patternImg: HTMLImageElement | null): CanvasTexture {
-    const tex = useMemo(() => buildTexture(color, patternImg), [color, patternImg]);
+function useColorTexture(color: string, patternImg: HTMLImageElement | null): CanvasTexture {
+    const tex = useMemo(() => buildColorTexture(color, patternImg), [color, patternImg]);
     useEffect(() => () => { tex.dispose(); }, [tex]);
     return tex;
 }
 
 interface ShirtMeshProps {
-    part:       ShirtPart;
-    geometry:   BufferGeometry;
-    roughness?: number;
+    part:        ShirtPart;
+    geometry:    BufferGeometry;
+    normalMap:   Texture | null;
+    aoRoughMap:  Texture | null;
 }
 
-function ShirtMesh({ part, geometry, roughness }: ShirtMeshProps) {
+function ShirtMesh({ part, geometry, normalMap, aoRoughMap }: ShirtMeshProps) {
     const meshRef = useRef<Mesh>(null!);
     const matRef  = useRef<TMeshStd>(null!);
     const [hovered, setHovered] = useState(false);
@@ -85,7 +93,7 @@ function ShirtMesh({ part, geometry, roughness }: ShirtMeshProps) {
     const patternUrl = partPatterns[part];
 
     const patternImg = usePatternImage(patternUrl);
-    const tex = usePartTexture(color, patternImg);
+    const colorTex   = useColorTexture(color, patternImg);
 
     useEffect(() => {
         if (meshRef.current) registerMesh(part, meshRef.current);
@@ -116,9 +124,9 @@ function ShirtMesh({ part, geometry, roughness }: ShirtMeshProps) {
     const stencilWriteMat = useMemo(() => {
         const m = new MeshBasicMaterial({ colorWrite: false, depthWrite: false });
         m.stencilWrite = true;
-        m.stencilFunc = AlwaysStencilFunc;
+        m.stencilFunc  = AlwaysStencilFunc;
         m.stencilZPass = ReplaceStencilOp;
-        m.stencilRef = 1;
+        m.stencilRef   = 1;
         return m;
     }, []);
 
@@ -142,9 +150,9 @@ function ShirtMesh({ part, geometry, roughness }: ShirtMeshProps) {
             `,
         });
         m.stencilWrite = false;
-        m.stencilFunc = NotEqualStencilFunc;
-        m.stencilRef = 1;
-        m.stencilFail = KeepStencilOp;
+        m.stencilFunc  = NotEqualStencilFunc;
+        m.stencilRef   = 1;
+        m.stencilFail  = KeepStencilOp;
         m.stencilZFail = KeepStencilOp;
         m.stencilZPass = KeepStencilOp;
         return m;
@@ -161,8 +169,11 @@ function ShirtMesh({ part, geometry, roughness }: ShirtMeshProps) {
             >
                 <meshStandardMaterial
                     ref={matRef}
-                    map={tex}
-                    roughness={roughness ?? 0.85}
+                    map={colorTex}
+                    normalMap={normalMap}
+                    roughnessMap={aoRoughMap}
+                    aoMap={aoRoughMap}
+                    roughness={1}
                     metalness={0}
                     emissive={EMISSIVE_HOVER}
                     emissiveIntensity={0.0001}
@@ -179,22 +190,26 @@ function ShirtMesh({ part, geometry, roughness }: ShirtMeshProps) {
 }
 
 export function Test() {
-    const { nodes } = useGLTF("/models/model.glb") as unknown as TShirtGLTF;
+    const { nodes, materials } = useGLTF("/shirt_pbr.gltf") as unknown as TShirtGLTF;
+
+    const shirtMat  = materials.shirt;
+    const insideMat = materials.shirt_inside;
+
+    const normalMap  = shirtMat.normalMap  ?? null;
+    const aoRoughMap = shirtMat.aoMap      ?? shirtMat.roughnessMap ?? null;
 
     return (
         <group dispose={null}>
-            <ShirtMesh part="back"         geometry={nodes["t-shirt_back"].geometry} />
-            <mesh geometry={nodes["t-shirt_inside"].geometry}>
-                <meshStandardMaterial color={INSIDE_COLOR} roughness={1} metalness={0} />
-            </mesh>
-            <ShirtMesh part="sleeve_left"  geometry={nodes["t-shirt_sleeve_left"].geometry} />
-            <ShirtMesh part="sleeve_right" geometry={nodes["t-shirt_sleeve_right"].geometry} />
-            <ShirtMesh part="front"        geometry={nodes["t-shirt_front"].geometry} />
-            <ShirtMesh part="collar"       geometry={nodes["t-shirt_collar"].geometry} />
+            <ShirtMesh part="back"         geometry={nodes["t-shirt_back"].geometry}         normalMap={normalMap} aoRoughMap={aoRoughMap} />
+            <ShirtMesh part="sleeve_left"  geometry={nodes["t-shirt_sleeve_left"].geometry}  normalMap={normalMap} aoRoughMap={aoRoughMap} />
+            <ShirtMesh part="sleeve_right" geometry={nodes["t-shirt_sleeve_right"].geometry} normalMap={normalMap} aoRoughMap={aoRoughMap} />
+            <ShirtMesh part="front"        geometry={nodes["t-shirt_front"].geometry}        normalMap={normalMap} aoRoughMap={aoRoughMap} />
+            <ShirtMesh part="collar"       geometry={nodes["t-shirt_collar"].geometry}       normalMap={normalMap} aoRoughMap={aoRoughMap} />
+            <mesh geometry={nodes["t-shirt_inside"].geometry} material={insideMat} />
         </group>
     );
 }
 
 if (typeof window !== "undefined") {
-    useGLTF.preload("/models/model.glb");
+    useGLTF.preload("/shirt_pbr.gltf");
 }
