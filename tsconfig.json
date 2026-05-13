@@ -1,0 +1,81 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "@styles/*": [
+        "./src/ui/styles/*"
+      ],
+      "@types": [
+        "./src/ui/types"
+      ],
+      "@atoms": [
+        "./src/ui/components/atomic/atoms"
+      ],
+      "@atoms/*": [
+        "./src/ui/components/atomic/atoms/*"
+      ],
+      "@molecules": [
+        "./src/ui/components/atomic/molecules"
+      ],
+      "@molecules/*": [
+        "./src/ui/components/atomic/molecules/*"
+      ],
+      "@organisms": [
+        "./src/ui/components/atomic/organisms"
+      ],
+      "@organisms/*": [
+        "./src/ui/components/atomic/organisms/*"
+      ],
+      "@templates": [
+        "./src/ui/components/atomic/templates"
+      ],
+      "@templates/*": [
+        "./src/ui/components/atomic/templates/*"
+      ],
+      "@store": [
+        "./src/store"
+      ],
+      "@utils/*": [
+        "./src/ui/utils/*"
+      ],
+      "@utils/*": [
+        "./src/ui/utils/*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
