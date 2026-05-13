@@ -25,7 +25,7 @@ export const ColorPicker = () => {
         <div className="flex flex-col gap-4 p-4">
             <div className="flex flex-col gap-2">
                 <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                    Сегмент <span className="normal-case text-gray-400">(shift для мультивибору)</span>
+                    Segment <span className="normal-case text-gray-400">(Shift for multi-select)</span>
                 </span>
                 <div className="flex flex-wrap gap-1">
                     {SHIRT_PARTS.map(({ key, label }) => {
@@ -55,7 +55,7 @@ export const ColorPicker = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Колір</span>
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Color</span>
                 <div className="flex flex-wrap gap-2">
                     {COLORS.map(({ label, value }) => (
                         <button

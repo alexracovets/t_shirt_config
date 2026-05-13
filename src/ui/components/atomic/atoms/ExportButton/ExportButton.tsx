@@ -31,7 +31,7 @@ export const ExportButton = () => {
                 onClick={handleSVG}
                 className="w-full py-2 px-3 bg-black text-white text-sm font-medium rounded hover:bg-gray-800 transition-colors"
             >
-                Експорт SVG
+                Export SVG
             </button>
         </div>
     );

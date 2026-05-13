@@ -22,7 +22,7 @@ export const PatternPicker = () => {
 
     return (
         <div className="flex flex-col gap-2 p-4 border-t border-gray-200">
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Узор</span>
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">Pattern</span>
 
             <select
                 className="text-xs border border-gray-200 rounded px-2 py-1.5 bg-white"
@@ -38,7 +38,7 @@ export const PatternPicker = () => {
                 onClick={() => fileRef.current?.click()}
                 className="text-xs border border-dashed border-gray-300 rounded px-2 py-1.5 text-gray-500 hover:border-gray-500 hover:text-gray-700 transition-colors text-left"
             >
-                + Завантажити SVG / PNG
+                + Upload SVG / PNG
             </button>
             <input
                 ref={fileRef}

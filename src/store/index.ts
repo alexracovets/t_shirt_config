@@ -4,11 +4,11 @@ import type { Mesh } from "three";
 export type ShirtPart = "back" | "front" | "sleeve_left" | "sleeve_right" | "collar";
 
 export const SHIRT_PARTS: { key: ShirtPart; label: string }[] = [
-    { key: "front", label: "Перед" },
-    { key: "back", label: "Зад" },
-    { key: "sleeve_left", label: "Рукав лів." },
-    { key: "sleeve_right", label: "Рукав прав." },
-    { key: "collar", label: "Комір" },
+    { key: "front", label: "Front" },
+    { key: "back", label: "Back" },
+    { key: "sleeve_left", label: "Left sleeve" },
+    { key: "sleeve_right", label: "Right sleeve" },
+    { key: "collar", label: "Collar" },
 ];
 
 export interface PatternItem {
@@ -18,8 +18,8 @@ export interface PatternItem {
 }
 
 export const PATTERNS: PatternItem[] = [
-    { id: "none",         label: "Без узору",    url: "" },
-    { id: "pattern_test", label: "Тест",          url: "/patterns/pattern_test.png" },
+    { id: "none",         label: "No pattern",    url: "" },
+    { id: "pattern_test", label: "Test",          url: "/patterns/pattern_test.png" },
 ];
 
 type PartColors   = Record<ShirtPart, string>;
