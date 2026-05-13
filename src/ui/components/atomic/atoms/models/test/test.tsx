@@ -25,8 +25,8 @@ interface TShirtGLTF extends GLTF {
     };
 }
 
-const EMISSIVE_HOVER    = new Color("#ffffff");
-const EMISSIVE_SELECTED = new Color("#4477ff");
+const EMISSIVE_HOVER    = new Color("#FFD700");
+const EMISSIVE_SELECTED = new Color("#FFD700");
 const EMISSIVE_OFF      = new Color("#000000");
 
 function usePatternImage(url: string): HTMLImageElement | null {
